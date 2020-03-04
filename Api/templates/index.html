@@ -1,0 +1,39 @@
+{% extends "main.html" %}
+{% block content %}
+    <head>
+        <meta charset="UTF-8">
+        <title>Vulnerability Search</title>
+    </head>
+    <center>
+        <form action="http://0.0.0.0:5000/search" method="POST">
+            <div class="container">
+                <input id="autocomplete" name="autocomplete" placeholder="vulnerabilities....">
+            </div>
+        </form>
+    </center>
+    <script type="text/javascript">
+        $(function(){
+            var keypath = "My Test Keypath"
+            console.log(keypath)
+            $.ajax({
+                    url: '{{url_for("autocomplete")}}',
+                    contentType: 'application/json',
+                    method: "POST",
+                    dataType : 'json',
+                    data: JSON.stringify({variable:keypath})
+                }).done(function(data){
+                    console.log('in 1st func')
+                    $('#autocomplete').autocomplete({
+                        source: data.all_data,
+                        minLength: 1
+                    }).data("ui-autocomplete")._renderItem = function(ul, item){
+                        console.log('in 2nd func')
+                        console.log(item)
+                        var $a = $("<a></a>").text(item.threat);
+                        console.log($a)
+                        return $("<li></li>").append($a).appendTo(ul);
+                    };
+                });
+            });
+    </script>
+{% endblock %}
