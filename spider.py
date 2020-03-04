@@ -1,5 +1,4 @@
 from urllib.request import urlopen
-from link_finder import LinkFinder
 from link_finder2 import LinkFinder2
 from domain import *
 from functions import *
@@ -39,6 +38,7 @@ class Spider:
             print(thread_name + ' now crawling ' + page_url)
             print('Queue ' + str(len(Spider.queue)) + ' | Crawled  ' + str(len(Spider.crawled)))
             Spider.add_links_to_queue(Spider.gather_links(page_url))
+            print(Spider.gather_links(page_url))
             Spider.queue.remove(page_url)
             Spider.crawled.add(page_url)
             Spider.update_files()
