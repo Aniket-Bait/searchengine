@@ -1,10 +1,10 @@
 from elasticsearch import Elasticsearch
 import json
 from elasticsearch.helpers import scan
-es = Elasticsearch ([{'host': '192.168.1.4', 'port': 9200}])
+es = Elasticsearch ([{'host': '127.0.0.1', 'port': 9200}])
+
 
 def insert(dictn, title):
-
     if dictn:
         #print(dictn)
         if es.indices.exists("capecthreats2"):
