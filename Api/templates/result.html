@@ -4,18 +4,19 @@
         <meta charset="UTF-8">
         <title>search result</title>
     </head>
+
     <div class="container">
         {% for key, value in es_response.items() %}
             <div id="accordion-{{key|e|replace(' ' ,'')|replace(':','-')}}">
                 <div class="card">
-                    <div class="card-header" id="heading-{{key|replace(' ' ,'')|replace(':','-')}}">
+                    <div class="card-header" id="heading-{{key|replace(' ' ,'')|replace(':','-')|replace('(','-')}}">
                         <h5 class="mb-0">
-                            <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-{{key|replace(' ' ,'')|replace(':','-')}}" aria-expanded="true" aria-controls="collapse-{{key|replace(' ' ,'')|replace(':','-')}}">
-                                {{key}}
+                            <button class="btn btn-secondary" data-toggle="collapse" data-target="#collapse-{{key|replace(' ' ,'')|replace(':','-')}}" aria-expanded="true" aria-controls="collapse-{{key|replace(' ' ,'')|replace(':','-')}}">
+                                + {{key}}
                             </button>
                         </h5>
                     </div>
-                    <div id="collapse-{{key|replace(' ' ,'')|replace(':','-')}}" class="collapse show" aria-labelledby="heading-{{key|replace(' ' ,'')|replace(':','-')}}" data-parent="#accordion-{{key|replace(' ' ,'')|replace(':','-')}}">
+                    <div id="collapse-{{key|replace(' ' ,'')|replace(':','-')}}" class="collapse" aria-labelledby="heading-{{key|replace(' ' ,'')|replace(':','-')}}" data-parent="#accordion-{{key|replace(' ' ,'')|replace(':','-')}}">
                             {% for k, v in value.items()%}
                         <div class="card-body">
                                 {% for i, j in v.items() %}

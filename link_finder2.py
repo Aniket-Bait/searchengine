@@ -61,14 +61,30 @@ class LinkFinder2():
                 elast.insert(dictn, h2set.text)
                 #pp.pprint(dictn)
 
-                #elast.insert(dictn)
-                #pp.pprint(dictn)
+                
 
+        #     if "CVE-" in h2set.text and "Detail" in h2set.text and "DEPRECATED" not in h2set.text:
+        #         print("legal")
+        #         print("boom cve")
+        #         dictn = {}
+        #         dictn["threat"] = h2set.text
+        #         print(soup)
+        #         descr = soup.find("h3", id="vulnCurrentDescriptionTitle")
+        #         print("---===----====---")
+        #         print(descr)
+        #         # dictn["Current Description"] = descr.text
+        #
+        #
+        #         #elast.insert(dictn, h2set.text)
+        #         pp.pprint(dictn)
+        #
+        # keytocheck = ["nvd.nist.gov/vuln/detail", "nvd.nist.gov/vuln/full-listing/2020", "nvd.nist.gov/vuln/full-listing/2019", "nvd.nist.gov/vuln/full-listing/2018", "nvd.nist.gov/vuln/full-listing/2017", "nvd.nist.gov/vuln/full-listing"]
         for link in soup.find_all("a"):
             url = parse.urljoin(self.base_url, link.get("href"))
             checkhash = url.split("/")
             if "#" in checkhash[-1]:
                 continue
+            #if any(k in url for k in keytocheck):
             if "data/definitions" not in url and ("capec.mitre" not in url or "cwe.mitre" not in url):
                 continue
             self.links.add(url)
