@@ -3,6 +3,13 @@
     <head>
         <meta charset="UTF-8">
         <title>search result</title>
+        <style>
+            .btn-info{
+                background: #403B4A;  /* fallback for old browsers */
+                background: -webkit-linear-gradient(to right, #E7E9BB, #403B4A);  /* Chrome 10-25, Safari 5.1-6 */
+                background: linear-gradient(to right, #E7E9BB, #403B4A); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+            }
+        </style>
     </head>
     <div class="container">
         {% for key, value in es_response.items() %}
@@ -10,7 +17,7 @@
                 <div class="card">
                     <div class="card-header" id="heading-{{key|replace(' ' ,'')|replace(':','-')}}">
                         <h5 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{key|replace(' ' ,'')|replace(':','-')}}" aria-expanded="true" aria-controls="collapse-{{key|replace(' ' ,'')|replace(':','-')}}">
+                            <button class="btn btn-link btn-secondary" type="button" data-toggle="collapse" data-target="#collapse-{{key|replace(' ' ,'')|replace(':','-')}}" aria-expanded="true" aria-controls="collapse-{{key|replace(' ' ,'')|replace(':','-')}}">
                                 {{key}}
                             </button>
                         </h5>
