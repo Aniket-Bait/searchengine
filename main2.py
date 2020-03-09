@@ -4,8 +4,8 @@ from spider import Spider
 from domain import *
 from functions import *
 
-websites = ["https://capec.mitre.org/", "http://cwe.mitre.org/"]
-projectname = ["capec", "cwe"]
+websites = ["https://capec.mitre.org/", "http://cwe.mitre.org/"] #https://nvd.nist.gov/, "http://cwe.mitre.org/"
+projectname = ["capec", "cwe"] #"cve",
 
 # Create worker threads (will die when main exits)
 def create_workers():

@@ -7,9 +7,9 @@ from flask import Flask, render_template, request, jsonify, url_for
 from werkzeug.utils import redirect
 
 app = Flask(__name__, static_url_path='/static')
-app.jinja_env.trim_blocks = True
-app.jinja_env.lstrip_blocks = True
-env = Environment(extensions=['jinja2_ansible_filters.AnsibleCoreFiltersExtension'])
+#app.jinja_env.trim_blocks = True
+#app.jinja_env.lstrip_blocks = True
+#env = Environment(extensions=['jinja2_ansible_filters.AnsibleCoreFiltersExtension'])
 es_client = Elasticsearch([{'host': '127.0.0.1', 'port': 9200}])
 
 
@@ -37,19 +37,23 @@ def autocomplete():
     }
     es_all_response = []
 
-    res = es_client.search(index="capecthreats2", body=body)
+    # res = es_client.search(index="capecthreats2", body=body)
     res2 = es_client.search(index="capecthreats", body=body)
-    for value in res['hits']['hits']:
-        for key, val in value['_source'].items():
-            if key == 'threat':
-                v = str(val).split(':')
-                es_all_response.append({'threat': v[1], 'value': val})
+    # for value in res['hits']['hits']:
+    #     for key, val in value['_source'].items():
+    #         if key == 'threat':
+    #             v = str(val).split(':')
+    #             es_all_response.append({'threat': v[1], 'value': val})
     for value in res2['hits']['hits']:
         for key, val in value['_source'].items():
             if key == 'threat':
-                v = str(val).split(':')
-                es_all_response.append({'threat': v[1], 'value': val})
-    # pprint(es_all_response)
+                print(val)
+                if val.find(':') == -1:
+                    es_all_response.append({'threat': val, 'value': val})
+                else:
+                    v = str(val).split(':')
+                    es_all_response.append({'threat': v[1], 'value': val})
+    pprint(es_all_response)
     return jsonify(all_data=es_all_response)
 
 
@@ -70,12 +74,12 @@ def search():
         }
     }
     es_response = {}
-    res = es_client.search(index="capecthreats2", body=body)
-    res2 = es_client.search(index="capecthreats", body=body)
-    pprint(res2)
-    for value in res2['hits']['hits']:
-        rese = {'values': dict(list(value['_source'].items())[1:len(value['_source'])])}
-        es_response[value['_source']['threat']] = rese
+    res = es_client.search(index="capecthreats", body=body)
+    # res2 = es_client.search(index="capecthreats", body=body)
+    # pprint(res2)
+    # for value in res2['hits']['hits']:
+    #     rese = {'values': dict(list(value['_source'].items())[1:len(value['_source'])])}
+    #     es_response[value['_source']['threat']] = rese
     for value in res['hits']['hits']:
         rese = {'values': dict(list(value['_source'].items())[1:len(value['_source'])])}
         es_response[value['_source']['threat']] = rese
