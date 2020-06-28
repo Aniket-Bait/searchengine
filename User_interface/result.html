@@ -131,7 +131,8 @@
                         var myList = data.querySet
                         for (var i = 1 in myList) {
                             //Keep in mind we are using "Template Litterals to create rows"
-                            var desc = myList[i].description; 
+                            var desc = myList[i].description;
+                            // console.log(desc)
                             var row1 = `<tr>
                                             <td>
                                                 <div class="card">
@@ -146,7 +147,8 @@
                                                 </div>
                                                 <br>
                                             </td>
-                                        </tr>`                                                                        
+                                        </tr>`              
+                            console.log(desc.substring(0, 400)+"....")                                                          
                             table.append(row1)
                         }
 
@@ -230,11 +232,11 @@
     </script>
     <body>
         <div id="particles-js">
+        </div>
+        <div class="wrapper">
             <div id="heading" >
                 <a href="/index.html">Threat Search Engine</a>
             </div>
-        </div>
-        <div class="wrapper">
             <form id="search-form" action="result.html" method="GET">
                 <div class="searchbox">
                     <input id="search-box" name="autocomplete" placeholder="vulnerabilities...." type="text" class="input"></input>
@@ -247,7 +249,7 @@
         </div>
         <div id="res-data" class="container">
             <!-- Table structure here -->
-            <table class="table table-dark" id="our-table">
+            <table class="table table-stripped" id="our-table">
                 <tbody id="table-body">
                 </tbody>
             </table>
