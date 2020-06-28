@@ -1,0 +1,259 @@
+<html>
+    <head>
+        <title>Result Page</title>
+        <meta charset="UTF-8">
+        <title>Vulnerability Search</title>
+        <link href="https://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" rel="stylesheet">
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="css/result-style.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.0.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+        <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous"></head>
+        <link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css">
+        <script src="https://code.jquery.com/jquery-migrate-3.0.0.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+        <script src="js/particles.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+
+    <script type="text/javascript">
+        particlesJS.load('particles-js', 'assets/particles.json', function(){
+            console.log("paritcle config file loaded")
+        });
+
+        var results = [];
+        $(document).ready(function(){
+            var query_string = decodeURIComponent(window.location.search);
+            query_string = query_string.split("=");
+            var stp_words = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 
+                            'you', "you're", "you've", "you'll", "you'd", 'your', 'yours', 
+                            'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 
+                            "she's", 'her', 'hers', 'herself', 'it', "it's", 'its', 'itself', 
+                            'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 
+                            'who', 'whom', 'this', 'that', "that'll", 'these', 'those', 'am', 
+                            'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 
+                            'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 
+                            'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 
+                            'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 
+                            'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 
+                            'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 
+                            'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 
+                            'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 
+                            'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 
+                            'don', "don't", 'should', "should've", 'now', 'd', 'll', 'm', 'o', 're', 've', 'y', 'ain', 
+                            'aren', "aren't", 'couldn', "couldn't", 'didn', "didn't", 'doesn', "doesn't", 'hadn', 
+                            "hadn't", 'hasn', "hasn't", 'haven', "haven't", 'isn', "isn't", 'ma', 'mightn', "mightn't", 
+                            'mustn', "mustn't", 'needn', "needn't", 'shan', "shan't", 'shouldn', "shouldn't", 'wasn', 
+                            "wasn't", 'weren', "weren't", 'won', "won't", 'wouldn', "wouldn't"]
+            var query_text = query_string[1];
+            var query = query_text.replace(/[+]/g, " ").trim();
+            var query_index = query.split(" ");
+            for (let index = 0; index < query_index.length; index++) {
+                var resp = stp_words.indexOf(query_index[index]);
+                if (resp != -1) {
+                    var query = query.replace(query_index[index], '').trim();
+                }
+            }
+
+            var query = query.replace(/[&,:;=?@#|'<>.^*()%!]/g, '');
+            if (query != -1){
+                var jqxhr = $.getJSON("http://localhost:5000/search/"+query, function(res_data){
+                    var state = {
+                        'querySet': res_data,
+                
+                        'page': 1,
+                        'rows': 5,
+                        'window': 5,
+                    }
+
+                    buildTable()
+
+                    function pagination(querySet, page, rows) {
+                        var trimStart = (page - 1) * rows
+                        var trimEnd = trimStart + rows
+                        var trimmedData = querySet.slice(trimStart, trimEnd)
+                        var pages = Math.round(querySet.length / rows);
+                        return {
+                            'querySet': trimmedData,
+                            'pages': pages,
+                        }
+                    }
+
+                    function pageButtons(pages) {
+                        var wrapper = document.getElementById('pagination-wrapper')
+                        
+                        wrapper.innerHTML = ``
+                        console.log('Pages:', pages)
+                        var maxLeft = (state.page - Math.floor(state.window / 2))
+                        var maxRight = (state.page + Math.floor(state.window / 2))
+                        
+                        if (maxLeft < 1) {
+                            maxLeft = 1
+                            maxRight = state.window
+                        }
+                        
+                        if (maxRight > pages) {
+                            maxLeft = pages - (state.window - 1)
+                            
+                            if (maxLeft < 1){
+                                maxLeft = 1
+                            }
+                            maxRight = pages
+                        }
+                        
+                        for (var page = maxLeft; page <= maxRight; page++) {
+                            wrapper.innerHTML += `<button value=${page} class="page btn btn-sm btn-info">${page}</button>`
+                        }
+                        
+                        if (state.page != 1) {
+                            wrapper.innerHTML = `<button value=${1} class="page btn btn-sm btn-info">&#171; First</button>` + wrapper.innerHTML
+                        }
+                        
+                        if (state.page != pages) {
+                            wrapper.innerHTML += `<button value=${pages} class="page btn btn-sm btn-info">Last &#187;</button>`
+                        }
+                        
+                        $('.page').on('click', function() {
+                            $('#table-body').empty()
+                            
+                            state.page = Number($(this).val())
+                            buildTable()
+                        });
+                    }
+
+                    function buildTable() {
+                        var table = $('#table-body')
+                        var data = pagination(state.querySet, state.page, state.rows)
+                        var myList = data.querySet
+                        for (var i = 1 in myList) {
+                            //Keep in mind we are using "Template Litterals to create rows"
+                            var desc = myList[i].description; 
+                            var row1 = `<tr>
+                                            <td>
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <a href = ${myList[i].url} > ${myList[i].url} </a>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <blockquote class="blockquote mb-0">
+                                                            ${desc.substring(0, 400)+"...."}
+                                                        </blockquote>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                            </td>
+                                        </tr>`                                                                        
+                            table.append(row1)
+                        }
+
+                        pageButtons(data.pages)
+                    }
+                    
+                }).done(function(){
+                    console.log("search successfull");
+                }).fail(function(){
+                    $("#res-data").html(`<img id='warning-icon' src='assets/alert.svg'>
+                                        <h1 id='error-msg'>
+                                            error in requesting search query
+                                        </h1>`)
+                    alert('search url returned status 404 please check api connection');
+                });
+
+                jqxhr.always(function(){
+                    console.log("second complete");
+                });
+            }
+        });
+
+        function split(val){
+            return val.split(/ \s*/);
+        }
+
+        function extractLast(term){
+            return split(term).pop();
+        }
+
+        $(function(){
+            var jqxhr = $.getJSON("http://localhost:5000/autocomplete", function (data) {
+                $("#search-box").bind("keydown", function(event){
+                    if(event.width===32){
+                        $("characterSpan").html($(this).val());
+                    }
+                    if(event.keyCode === $.ui.keyCode.TAB && $(this).data("autocomplete").menu.active){
+                        event.preventDefault();
+                    }
+                }).autocomplete({
+                    minLength: 0,
+                    maxResults: 10,
+                    source: function(request, response){
+                        var term = request.term;
+                        var results = $.ui.autocomplete.filter(data, extractLast(term));
+                        response(results.slice(0, this.options.maxResults));
+                    },
+                    focus: function(event, ui){
+                        return false;
+                    },
+                    select: function(event, ui){
+                        var terms = split(this.value);
+                        terms.pop();
+                        terms.push(ui.item.value);
+                        terms.push("");
+                        this.value = terms.join(" ");
+                        $("#characterSpan").html($(this).val());
+                        return false;
+                    },
+                    open: function(event, ui){
+                        var span = $('#characterSpan');
+                        var width = span.width();
+                        width > $("#search-box").width() ?
+                        width = parseInt($("#search-box").position().left + $("#search-box").width()) :
+                        width = parseInt($("#search-box").position().left + width);
+                        
+                        $('.ui-autocomplete.ui-menu').css('center', width + 'px');
+                    }
+                });
+            }).done(function(){
+                console.log("autocomplete successfull");
+            }).fail(function(){
+                alert('autocomplete url returned status 404 please check api connection');
+            });
+
+            jqxhr.always(function(){
+                console.log("second complete");
+            });
+        });
+
+    </script>
+    <body>
+        <div id="particles-js">
+            <div id="heading" >
+                <a href="/index.html">Threat Search Engine</a>
+            </div>
+        </div>
+        <div class="wrapper">
+            <form id="search-form" action="result.html" method="GET">
+                <div class="searchbox">
+                    <input id="search-box" name="autocomplete" placeholder="vulnerabilities...." type="text" class="input"></input>
+                    <span id="characterSpan" style="visibility: hidden;"></span>
+                    <div class="search-btn">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="res-data" class="container">
+            <!-- Table structure here -->
+            <table class="table table-dark" id="our-table">
+                <tbody id="table-body">
+                </tbody>
+            </table>
+        </div>
+        <div class="container ">
+            <div id="pagination-wrapper"></div>
+        </div>
+    </body>
+</html>

@@ -3,6 +3,7 @@ from urllib import parse
 import pprint
 import elast
 import nltk
+import re
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 en_stops = set(stopwords.words('english'))
@@ -17,27 +18,26 @@ class LinkFinder2():
 
     def feed(self, htmlstring, page_url):
         soup = BeautifulSoup(htmlstring, "html.parser")
-
         description_div = soup.find(id="Description")
-        for child in description_div.children:
-            description = child.get_text()
+        if description_div is not None:
+            for child in description_div.children:
+                description = child.get_text()
 
-
-        print("-----------------------------------------------------------------------------------------------------")
+        # print("-----------------------------------------------------------------------------------------------------")
 
         h2sets = soup.find_all("h2")
-        print(page_url)
+        # print(page_url)
         print("in feed")
         for h2set in h2sets:
-            print(h2set.text)
+            # print(h2set.text)
             if "CAPEC-" in h2set.text and "DEPRECATED" not in h2set.text:
                 main_content_div = soup.find(id="CAPECDefinition")
                 # print(main_content_div.get_text(" ", strip=True))
                 main_content = main_content_div.get_text(" ", strip=True)
                 keywords = self.get_keywords(main_content)
-                print(keywords)
-                print("legal")
-                print("boom capec")
+                # print(keywords)
+                # print("legal")
+                # print("boom capec")
                 dictn = {}
                 dictn["threat"] = h2set.text
                 dictn["url"] = page_url
@@ -64,9 +64,9 @@ class LinkFinder2():
                 # print(main_content_div.get_text(" ", strip=True))
                 main_content = main_content_div.get_text(" ", strip=True)
                 keywords = self.get_keywords(main_content)
-                print(keywords)
-                print("legal")
-                print("boom cwe")
+                # print(keywords)
+                # print("legal")
+                # print("boom cwe")
                 dictn = {}
                 dictn["threat"] = h2set.text
                 dictn["url"] = page_url
@@ -86,17 +86,25 @@ class LinkFinder2():
             if "data/definitions" not in url and ("capec.mitre" not in url or "cwe.mitre" not in url):
                 continue
             self.links.add(url)
-            print("------------------------------------------------------"+url)
+            # print("------------------------------------------------------"+url)
 
     def page_links(self):
         return self.links
 
     def get_keywords(self, main_content):
         keywords = []
+        pattern = re.compile("([a-zA-Z])\w+(-)(\d+)")
         # word_tokens = word_tokenize(main_content)
         word_tokens = str(main_content).lower().split(" ")
+        # word_tokens = [word for word in word_tokens if word.isalpha()]
         for word in word_tokens:
-            if word not in en_stops:
-                keywords.append(word)
+            if word.isalpha():
+                if (word not in en_stops) and (word not in keywords):
+                    print("- not found", word)
+                    keywords.append(word)
+            else:
+                if pattern.match(word):
+                    print("- found: ",word)
+                    keywords.append(word)
         return keywords
 
