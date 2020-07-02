@@ -43,21 +43,25 @@ def search(search_term):
     body = {
         "size": 10000,
         "_source": {
-            "includes": ["threat", "url", "description"],
-            "excludes": ["keywords"]
+            "includes": ["threat", "url", "description", "keywords"],
+            # "excludes": ["keywords"]
         },
         "query": {
-            "function_score": {
-                "query": {
-                    "multi_match": {
-                        "query": query_text
-                    }
-                },
-                "boost": "5",
-                "random_score": {},
-                "boost_mode": "multiply",
-                "score_mode": "max"
-                }
+            "multi_match": {
+                "query": query_text,
+                "type": "best_fields"
+            }
+            # "function_score": {
+            #     "query": {
+            #         "multi_match": {
+            #             "query": query_text
+            #         }
+            #     },
+            #     "boost": "5",
+            #     "random_score": {},
+            #     "boost_mode": "multiply",
+            #     "score_mode": "max"
+            #     }
             }
         }
     es_response = []

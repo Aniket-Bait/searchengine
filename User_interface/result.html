@@ -132,12 +132,16 @@
                         for (var i = 1 in myList) {
                             //Keep in mind we are using "Template Litterals to create rows"
                             var desc = myList[i].description;
+                            var url_vals = myList[i].url
+                            var url_split = url_vals.split('/')
+                            console.log(url_split)
                             // console.log(desc)
                             var row1 = `<tr>
                                             <td>
                                                 <div class="card">
                                                     <div class="card-header">
-                                                        <a href = ${myList[i].url} > ${myList[i].url} </a>
+                                                        <a href = ${myList[i].url} > ${myList[i].threat} </a>
+                                                        <p id='url-text'>${myList[i].url}<p>
                                                     </div>
                                                     <div class="card-body">
                                                         <blockquote class="blockquote mb-0">
